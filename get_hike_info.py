@@ -11,7 +11,7 @@ key = read_key("API_Key_google.txt")
 
 url = "https://places.googleapis.com/v1/places:searchText"
 
-def get_hike_locations():
+def get_hike_info():
     result = requests.post(
         url=url,
         headers={
@@ -63,4 +63,4 @@ def get_hike_locations():
     else:
         return print(pd.DataFrame([resultJson.get("places")[i].get("displayName") for i in range(len(resultJson.get("places")))])), "two"
 
-get_hike_locations()
+get_hike_info()
