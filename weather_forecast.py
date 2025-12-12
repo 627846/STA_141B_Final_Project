@@ -9,12 +9,34 @@ headers = {
 }
 
 def weather_forecast(latitude,longitude):
+    today = date.today()
     result = requests.get(url = f"https://api.weather.gov/points/{latitude},{longitude}", headers = headers)
     resultJson = result.json()
     urlNew = resultJson.get("properties").get("forecastHourly")
     result2 = requests.get(url = urlNew, headers = headers)
     resultJson2 = result2.json()
-    time = [resultJson2.get("properties").get("periods")[i].get("startTime") for i in range(len(resultJson2.get("properties").get("periods")))]
+    excess = str(today.year) + "-"
+    forcastDate = [resultJson2.get("properties").get("periods")[i].get("startTime") for i in range(len(resultJson2.get("properties").get("periods")))]
+    forcastDate = [forcastDate[i].replace(excess, "") for i in range(len(forcastDate))]
+    forcastDate = [forcastDate[i].replace(":00:00-08:00", "") for i in range(len(forcastDate))]
     temp = [resultJson2.get("properties").get("periods")[i].get("temperature") for i in range(len(resultJson2.get("properties").get("periods")))]
-    tempForecast = {time[i]: temp[i] for i in range(len(time))}
-    return tempForecast
+    tempForecast = {forcastDate[i]: temp[i] for i in range(len(forcastDate))}
+    coldest = min(tempForecast.values())
+    hottest = max(tempForecast.values())
+    if hottest <= 70:
+        return DateDecoder([key for key, value in tempForecast.items() if(value == hottest)])
+    elif coldest >= 55:
+        return DateDecoder([key for key, value in tempForecast.items() if(value == coldest)])
+    elif [key for key, value in tempForecast.items() if 55 <= value <= 70]:
+        return DateDecoder([key for key, value in tempForecast.items() if 55 <= value <= 70])
+    elif coldest <=32 and hottest >= 90:
+        return print("Hiking is ill advised in this weather")
+
+def DateDecoder(dates):
+    forecastMonthDay = [dates[i].split("T")[0] for i in range(len(dates))]
+    forecastTime = [dates[i].split("T")[1] for i in range(len(dates))]
+    forecastMonth = [forecastMonthDay[i].split("-")[0] for i in range(len(forecastMonthDay))]
+    forecastDay = [forecastMonthDay[i].split("-")[1] for i in range(len(forecastMonthDay))]
+    dct = {"Month": forecastMonth, "Day": forecastDay, "Time": forecastTime}
+    df = pd.DataFrame(dct)
+    return df
