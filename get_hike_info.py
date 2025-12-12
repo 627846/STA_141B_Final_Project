@@ -63,9 +63,9 @@ def get_closest_hike(location):
     loc = [[latitude[i], longitude[i]] for i in range(len(latitude))]
     dist = [distance.distance(loc[i], centralDavis).km for i in range(len(loc))]
     closest = dist.index(min(dist))
-    temp = loc[closest]
+    coords = loc[closest]
     result = [df[i].get("displayName").get("text")
-                    for i in range(len(df)) if df[i].get("location").get("latitude") == temp[0] and df[i].get("location").get("longitude") == temp[1]]
+                    for i in range(len(df)) if df[i].get("location").get("latitude") == coords[0] and df[i].get("location").get("longitude") == coords[1]]
     return result
 get_hike_info()
 get_best_hike(df)
