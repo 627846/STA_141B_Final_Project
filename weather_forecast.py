@@ -23,17 +23,17 @@ def weather_forecast(latitude,longitude):
     tempForecast = {forcastDate[i]: temp[i] for i in range(len(forcastDate))}
     coldest = min(tempForecast.values())
     hottest = max(tempForecast.values())
-    if hottest <= 70:
+    if coldest <=32 and hottest >= 90:
+        return print("Hiking is ill advised in this weather")
+    elif [key for key, value in tempForecast.items() if 55 <= value <= 70]:
+        return DateDecoder([key for key, value in tempForecast.items() if 55 <= value <= 70],
+                           [value for key, value in tempForecast.items() if 55 <= value <= 70])
+    elif hottest <= 70:
         return DateDecoder([key for key, value in tempForecast.items() if(value == hottest)], 
                            [value for key, value in tempForecast.items() if(value == hottest)])
     elif coldest >= 55:
         return DateDecoder([key for key, value in tempForecast.items() if(value == coldest)], 
                            [value for key, value in tempForecast.items() if(value == coldest)])
-    elif [key for key, value in tempForecast.items() if 55 <= value <= 70]:
-        return DateDecoder([key for key, value in tempForecast.items() if 55 <= value <= 70],
-                           [value for key, value in tempForecast.items() if 55 <= value <= 70])
-    elif coldest <=32 and hottest >= 90:
-        return print("Hiking is ill advised in this weather")
 
 def DateDecoder(dates, temperature):
     forecastMonthDay = [dates[i].split("T")[0] for i in range(len(dates))]
