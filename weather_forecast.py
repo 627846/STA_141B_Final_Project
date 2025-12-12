@@ -24,19 +24,23 @@ def weather_forecast(latitude,longitude):
     coldest = min(tempForecast.values())
     hottest = max(tempForecast.values())
     if hottest <= 70:
-        return DateDecoder([key for key, value in tempForecast.items() if(value == hottest)])
+        return DateDecoder([key for key, value in tempForecast.items() if(value == hottest)], 
+                           [value for key, value in tempForecast.items() if(value == hottest)])
     elif coldest >= 55:
-        return DateDecoder([key for key, value in tempForecast.items() if(value == coldest)])
+        return DateDecoder([key for key, value in tempForecast.items() if(value == coldest)], 
+                           [value for key, value in tempForecast.items() if(value == coldest)])
     elif [key for key, value in tempForecast.items() if 55 <= value <= 70]:
-        return DateDecoder([key for key, value in tempForecast.items() if 55 <= value <= 70])
+        return DateDecoder([key for key, value in tempForecast.items() if 55 <= value <= 70],
+                           [value for key, value in tempForecast.items() if 55 <= value <= 70])
     elif coldest <=32 and hottest >= 90:
         return print("Hiking is ill advised in this weather")
 
-def DateDecoder(dates):
+def DateDecoder(dates, temperature):
     forecastMonthDay = [dates[i].split("T")[0] for i in range(len(dates))]
-    forecastTime = [dates[i].split("T")[1] for i in range(len(dates))]
+    forecastTime = [dates[i].split("T")[1]+ ":00" for i in range(len(dates))]
     forecastMonth = [forecastMonthDay[i].split("-")[0] for i in range(len(forecastMonthDay))]
     forecastDay = [forecastMonthDay[i].split("-")[1] for i in range(len(forecastMonthDay))]
-    dct = {"Month": forecastMonth, "Day": forecastDay, "Time": forecastTime}
+   
+    dct = {"Month": forecastMonth, "Day": forecastDay, "Time": forecastTime, "Temperature": temperature}
     df = pd.DataFrame(dct)
     return df
