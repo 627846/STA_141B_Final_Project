@@ -21,7 +21,7 @@ def get_hike_info():
             headers={
                 "Content-Type": "application/json",
                 "X-Goog-Api-Key": key,
-                "X-Goog-FieldMask": "places.displayName,places.location,places.rating,places.userRatingCount,nextPageToken"
+                "X-Goog-FieldMask": "places.displayName,places.location,places.rating,places.userRatingCount,places.id,nextPageToken"
             },
             json={
                 "pageToken": nextPage,
@@ -48,29 +48,33 @@ df = get_hike_info()
 
 def get_best_hike(df):
     rating = [df[i].get("rating") for i in range(len(df))]
-    maxRating = max(rating)
+    bestRating = max(rating)
     [df[i].get("rating") for i in range(len(df))]
-    best = [df[i].get("displayName").get("text") for i in range(len(df)) if maxRating == df[i].get("rating")]
-    return get_most_reviewed(best)
+    Ids = [df[i].get("id") for i in range(len(df)) if bestRating == df[i].get("rating")]
+    rating = [df[i].get("rating") for i in range(len(df)) if bestRating == df[i].get("rating")]
+    numReviews = [df[i].get("userRatingCount") for i in range(len(df)) if bestRating == df[i].get("rating")]
+    name = [df[i].get("displayName").get("text") for i in range(len(df)) if bestRating == df[i].get("rating")]
+    dct = {"Name": name,"Rating": rating, "# of Reviews": numReviews, "Id": Ids}
+    dfBest = pd.DataFrame(dct)
+    return dfBest
 
-def get_most_reviewed(best):
+def get_most_reviewed(bestId):
     count = [{df[i].get("userRatingCount"):df[i].get("displayName")}
-                    for i in range(len(df)) for k in range(len(best)) if df[i].get("displayName").get("text") == best[k]]
+                    for i in range(len(df)) for k in range(len(bestId)) if df[i].get("id") == bestId[k]]
     maxCount = [max(count[i].keys()) for i in range(len(count))]
     bestKey = max(maxCount)
-    
     return [count[i].get(bestKey).get("text") for i in range(len(count)) if count[i].get(bestKey)][0]
 
 def get_distance_to_hike(location):
     centralDavis = (38.551683, -121.749776)
     latitude = [df[i].get("location").get("latitude") 
-                    for i in range(len(df)) if df[i].get("displayName").get("text") == location][0]
+                    for i in range(len(df)) if df[i].get("displayName").get("text") == location]
     longitude = [df[i].get("location").get("longitude") 
-                    for i in range(len(df)) if df[i].get("displayName").get("text") == location][0]
-    loc = [latitude, longitude]
+                    for i in range(len(df)) if df[i].get("displayName").get("text") == location]
+    loc = [latitude[0], longitude[0]]
     dist = [distance.distance(loc, centralDavis).km]
-    return dist
+    return dist, loc
 
 get_hike_info()
 get_best_hike(df)
-get_distance_to_hike(get_best_hike(df))
+get_distance_to_hike(get_best_hike(df).iat[0,0])
