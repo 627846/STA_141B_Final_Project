@@ -43,5 +43,5 @@ def DateDecoder(dates, temperature):
    
     dct = {"Month": forecastMonth, "Day": forecastDay, "Time": forecastTime, "Temperature": temperature}
     df = pd.DataFrame(dct)
-    return df
+    return df.head(10)
 weather_forecast(get_distance_to_hike(get_best_hike(df))[1][0],get_distance_to_hike(get_best_hike(df))[1][1])
